@@ -1,0 +1,216 @@
+<html>
+<head>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.16.1/vis.css" type="text/css" />
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.16.1/vis-network.min.js"> </script>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+
+<style type="text/css">
+
+        #mynetwork {
+            width: 950px;
+            height: 500px;
+            background-color: #ffffff;
+            border: 1px solid lightgray;
+            position: relative;
+            float: left;
+        }
+
+        
+        #loadingBar {
+            position:absolute;
+            top:0px;
+            left:0px;
+            width: 950px;
+            height: 500px;
+            background-color:rgba(200,200,200,0.8);
+            -webkit-transition: all 0.5s ease;
+            -moz-transition: all 0.5s ease;
+            -ms-transition: all 0.5s ease;
+            -o-transition: all 0.5s ease;
+            transition: all 0.5s ease;
+            opacity:1;
+        }
+
+        #bar {
+            position:absolute;
+            top:0px;
+            left:0px;
+            width:20px;
+            height:20px;
+            margin:auto auto auto auto;
+            border-radius:11px;
+            border:2px solid rgba(30,30,30,0.05);
+            background: rgb(0, 173, 246); /* Old browsers */
+            box-shadow: 2px 0px 4px rgba(0,0,0,0.4);
+        }
+
+        #border {
+            position:absolute;
+            top:10px;
+            left:10px;
+            width:500px;
+            height:23px;
+            margin:auto auto auto auto;
+            box-shadow: 0px 0px 4px rgba(0,0,0,0.2);
+            border-radius:10px;
+        }
+
+        #text {
+            position:absolute;
+            top:8px;
+            left:530px;
+            width:30px;
+            height:50px;
+            margin:auto auto auto auto;
+            font-size:22px;
+            color: #000000;
+        }
+
+        div.outerBorder {
+            position:relative;
+            top:400px;
+            width:600px;
+            height:44px;
+            margin:auto auto auto auto;
+            border:8px solid rgba(0,0,0,0.1);
+            background: rgb(252,252,252); /* Old browsers */
+            background: -moz-linear-gradient(top,  rgba(252,252,252,1) 0%, rgba(237,237,237,1) 100%); /* FF3.6+ */
+            background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(252,252,252,1)), color-stop(100%,rgba(237,237,237,1))); /* Chrome,Safari4+ */
+            background: -webkit-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* Chrome10+,Safari5.1+ */
+            background: -o-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* Opera 11.10+ */
+            background: -ms-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* IE10+ */
+            background: linear-gradient(to bottom,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* W3C */
+            filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fcfcfc', endColorstr='#ededed',GradientType=0 ); /* IE6-9 */
+            border-radius:72px;
+            box-shadow: 0px 0px 10px rgba(0,0,0,0.2);
+        }
+        
+
+        
+        #config {
+            float: left;
+            width: 400px;
+            height: 600px;
+        }
+        
+
+        
+</style>
+
+</head>
+
+<body>
+<div id = "mynetwork"></div>
+
+<div id="loadingBar">
+    <div class="outerBorder">
+        <div id="text">0%</div>
+        <div id="border">
+            <div id="bar"></div>
+        </div>
+    </div>
+</div>
+
+
+<div id = "config"></div>
+
+<script type="text/javascript">
+
+    // initialize global variables.
+    var edges;
+    var nodes;
+    var network; 
+    var container;
+    var options, data;
+
+    
+    // This method is responsible for drawing the graph, returns the drawn network
+    function drawGraph() {
+        var container = document.getElementById('mynetwork');
+        
+        
+
+        // parsing and collecting nodes and edges from the python
+        nodes = new vis.DataSet([{"color": "orange", "id": "101stAASLTDiv", "label": "101stAASLTDiv", "shape": "square", "size": 6.0}, {"color": "lightgray", "id": "101Bastogne", "label": "101Bastogne", "shape": "dot", "size": 8.0}, {"color": "lightgray", "id": "101CAB", "label": "101CAB", "shape": "dot", "size": 8.0}, {"color": "lightgray", "id": "101HHBn", "label": "101HHBn", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "101stAASLTDIV", "label": "101stAASLTDIV", "shape": "dot", "size": 16.0}, {"color": "orange", "id": "18airbornecorps", "label": "18airbornecorps", "shape": "square", "size": 6.0}, {"color": "lightgray", "id": "40thPAD", "label": "40thPAD", "shape": "dot", "size": 12.0}, {"color": "lightgray", "id": "5thForces", "label": "5thForces", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "AlexDenisTV", "label": "AlexDenisTV", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "ArmyChiefStaff", "label": "ArmyChiefStaff", "shape": "dot", "size": 16.0}, {"color": "lightgray", "id": "CAFinUS", "label": "CAFinUS", "shape": "dot", "size": 8.0}, {"color": "orange", "id": "FORSCOM", "label": "FORSCOM", "shape": "square", "size": 6.0}, {"color": "lightgray", "id": "FPWellman", "label": "FPWellman", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "FVLCFT", "label": "FVLCFT", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "FortCampbell", "label": "FortCampbell", "shape": "dot", "size": 8.0}, {"color": "lightgray", "id": "JohnCogbill", "label": "JohnCogbill", "shape": "dot", "size": 8.0}, {"color": "lightgray", "id": "Mother_of_Tanks", "label": "Mother_of_Tanks", "shape": "dot", "size": 8.0}, {"color": "lightgray", "id": "NFL", "label": "NFL", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "NoSlackBN", "label": "NoSlackBN", "shape": "dot", "size": 8.0}, {"color": "lightgray", "id": "TCross_10", "label": "TCross_10", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "TaskandPurpose", "label": "TaskandPurpose", "shape": "dot", "size": 8.0}, {"color": "lightgray", "id": "TheRakkasans", "label": "TheRakkasans", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "Titans", "label": "Titans", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "USArmy", "label": "USArmy", "shape": "dot", "size": 24.0}, {"color": "lightgray", "id": "USArmyEURAF", "label": "USArmyEURAF", "shape": "dot", "size": 12.0}, {"color": "lightgray", "id": "WKRN", "label": "WKRN", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "usacac", "label": "usacac", "shape": "dot", "size": 8.0}, {"color": "lightgray", "id": "woolstonphoto", "label": "woolstonphoto", "shape": "dot", "size": 4.0}, {"color": "orange", "id": "10MTNDiv", "label": "10MTNDiv", "shape": "square", "size": 6.0}, {"color": "lightgray", "id": "10MTNDIV", "label": "10MTNDIV", "shape": "dot", "size": 8.0}, {"color": "lightgray", "id": "10thCAB", "label": "10thCAB", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "10thMTNDIVARTY", "label": "10thMTNDIVARTY", "shape": "dot", "size": 8.0}, {"color": "lightgray", "id": "10thSBDE", "label": "10thSBDE", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "16thSMA", "label": "16thSMA", "shape": "dot", "size": 12.0}, {"color": "lightgray", "id": "1BCT10MTN", "label": "1BCT10MTN", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "2BCT10thMtnDiv", "label": "2BCT10thMtnDiv", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "3_10MTNPatriots", "label": "3_10MTNPatriots", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "climbtoglory7", "label": "climbtoglory7", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "mountain_six", "label": "mountain_six", "shape": "dot", "size": 4.0}, {"color": "orange", "id": "3rd_Infantry", "label": "3rd_Infantry", "shape": "square", "size": 6.0}, {"color": "orange", "id": "82ndABNDiv", "label": "82ndABNDiv", "shape": "square", "size": 6.0}, {"color": "lightgray", "id": "HamillHimself", "label": "HamillHimself", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "HigginbothamA", "label": "HigginbothamA", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "TheWTFNation", "label": "TheWTFNation", "shape": "dot", "size": 8.0}, {"color": "lightgray", "id": "WTFIOGuy", "label": "WTFIOGuy", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "WTFNationRadio", "label": "WTFNationRadio", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "halbritz", "label": "halbritz", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "jaketapper", "label": "jaketapper", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "rickdicksonreal", "label": "rickdicksonreal", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "scottjstephens", "label": "scottjstephens", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "shelby3a", "label": "shelby3a", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "veteran_talk", "label": "veteran_talk", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "1ABCT_3ID", "label": "1ABCT_3ID", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "2INFDIV", "label": "2INFDIV", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "3rdCAB", "label": "3rdCAB", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "3rdIDSB", "label": "3rdIDSB", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "ArmyHRC", "label": "ArmyHRC", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "ArmyWP_Football", "label": "ArmyWP_Football", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "Army_Aviation", "label": "Army_Aviation", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "DeptofDefense", "label": "DeptofDefense", "shape": "dot", "size": 8.0}, {"color": "lightgray", "id": "EagleWerx", "label": "EagleWerx", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "EighthArmyKorea", "label": "EighthArmyKorea", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "FortBenning", "label": "FortBenning", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "HinesvilleGA", "label": "HinesvilleGA", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "MarneCG", "label": "MarneCG", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "MarneThunder", "label": "MarneThunder", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "PatDonahoeArmy", "label": "PatDonahoeArmy", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "SecArmy", "label": "SecArmy", "shape": "dot", "size": 8.0}, {"color": "lightgray", "id": "SpartanBrigade", "label": "SpartanBrigade", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "TradocDCG", "label": "TradocDCG", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "USAGStewartHAAF", "label": "USAGStewartHAAF", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "WestPoint_USMA", "label": "WestPoint_USMA", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "cityofsavannah", "label": "cityofsavannah", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "cushing_j", "label": "cushing_j", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "joe_hilbertjr", "label": "joe_hilbertjr", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "libertycounty", "label": "libertycounty", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "2BCT_FALCONS", "label": "2BCT_FALCONS", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "82ndCAB", "label": "82ndCAB", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "82ndDivarty", "label": "82ndDivarty", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "AA9Sends", "label": "AA9Sends", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "Adsb82nd", "label": "Adsb82nd", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "CDonahue1792", "label": "CDonahue1792", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "CJTFOIR", "label": "CJTFOIR", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "FortPolkPAO", "label": "FortPolkPAO", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "FtBraggNC", "label": "FtBraggNC", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "PantherBrigade", "label": "PantherBrigade", "shape": "dot", "size": 8.0}, {"color": "lightgray", "id": "StorytellerSBM", "label": "StorytellerSBM", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "Strike_Hold", "label": "Strike_Hold", "shape": "dot", "size": 8.0}, {"color": "lightgray", "id": "YouTube", "label": "YouTube", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "usairforce", "label": "usairforce", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "15thSMA", "label": "15thSMA", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "18abc_Dragon9", "label": "18abc_Dragon9", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "1stArmoredDiv", "label": "1stArmoredDiv", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "1stCAB1ID", "label": "1stCAB1ID", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "3dUSCAV", "label": "3dUSCAV", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "AUSAorg", "label": "AUSAorg", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "ArmedwScience", "label": "ArmedwScience", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "ArmyChaplains", "label": "ArmyChaplains", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "ArmyMedicine", "label": "ArmyMedicine", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "CDCgov", "label": "CDCgov", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "DeptVetAffairs", "label": "DeptVetAffairs", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "FORSCOMCSM23", "label": "FORSCOMCSM23", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "FightingFirst", "label": "FightingFirst", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "I_Corps", "label": "I_Corps", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "MilitaryHealth", "label": "MilitaryHealth", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "NATO", "label": "NATO", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "PentagonPresSec", "label": "PentagonPresSec", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "RedCurraheeBN", "label": "RedCurraheeBN", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "SecDef", "label": "SecDef", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "USACIMT", "label": "USACIMT", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "USARPAC", "label": "USARPAC", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "USArmyReserve", "label": "USArmyReserve", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "USNationalGuard", "label": "USNationalGuard", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "USNavy", "label": "USNavy", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "US_TRANSCOM", "label": "US_TRANSCOM", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "UnderSecArmy", "label": "UnderSecArmy", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "V_Corps_", "label": "V_Corps_", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "armyfutures", "label": "armyfutures", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "csaSoldier4Life", "label": "csaSoldier4Life", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "fema", "label": "fema", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "forthood", "label": "forthood", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "iiicorps_cg", "label": "iiicorps_cg", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "lancer_brigade", "label": "lancer_brigade", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "thejointstaff", "label": "thejointstaff", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "usarec", "label": "usarec", "shape": "dot", "size": 4.0}, {"color": "lightgray", "id": "warriorgames", "label": "warriorgames", "shape": "dot", "size": 4.0}]);
+        edges = new vis.DataSet([{"color": "gray", "from": "101stAASLTDiv", "to": "101Bastogne", "value": 18, "weight": 18}, {"color": "gray", "from": "101stAASLTDiv", "to": "101CAB", "value": 6, "weight": 6}, {"color": "gray", "from": "101stAASLTDiv", "to": "101HHBn", "value": 4, "weight": 4}, {"color": "gray", "from": "101stAASLTDiv", "to": "101stAASLTDIV", "value": 62, "weight": 62}, {"color": "gray", "from": "101stAASLTDiv", "to": "18airbornecorps", "value": 104, "weight": 104}, {"color": "gray", "from": "101stAASLTDiv", "to": "40thPAD", "value": 34, "weight": 34}, {"color": "gray", "from": "101stAASLTDiv", "to": "5thForces", "value": 3, "weight": 3}, {"color": "gray", "from": "101stAASLTDiv", "to": "AlexDenisTV", "value": 6, "weight": 6}, {"color": "gray", "from": "101stAASLTDiv", "to": "ArmyChiefStaff", "value": 3, "weight": 3}, {"color": "gray", "from": "101stAASLTDiv", "to": "CAFinUS", "value": 3, "weight": 3}, {"color": "gray", "from": "101stAASLTDiv", "to": "FORSCOM", "value": 7, "weight": 7}, {"color": "gray", "from": "101stAASLTDiv", "to": "FPWellman", "value": 5, "weight": 5}, {"color": "gray", "from": "101stAASLTDiv", "to": "FVLCFT", "value": 3, "weight": 3}, {"color": "gray", "from": "101stAASLTDiv", "to": "FortCampbell", "value": 11, "weight": 11}, {"color": "gray", "from": "101stAASLTDiv", "to": "JohnCogbill", "value": 21, "weight": 21}, {"color": "gray", "from": "101stAASLTDiv", "to": "Mother_of_Tanks", "value": 4, "weight": 4}, {"color": "gray", "from": "101stAASLTDiv", "to": "NFL", "value": 3, "weight": 3}, {"color": "gray", "from": "101stAASLTDiv", "to": "NoSlackBN", "value": 5, "weight": 5}, {"color": "gray", "from": "101stAASLTDiv", "to": "TCross_10", "value": 3, "weight": 3}, {"color": "gray", "from": "101stAASLTDiv", "to": "TaskandPurpose", "value": 3, "weight": 3}, {"color": "gray", "from": "101stAASLTDiv", "to": "TheRakkasans", "value": 7, "weight": 7}, {"color": "gray", "from": "101stAASLTDiv", "to": "Titans", "value": 9, "weight": 9}, {"color": "gray", "from": "101stAASLTDiv", "to": "USArmy", "value": 21, "weight": 21}, {"color": "gray", "from": "101stAASLTDiv", "to": "USArmyEURAF", "value": 5, "weight": 5}, {"color": "gray", "from": "101stAASLTDiv", "to": "WKRN", "value": 4, "weight": 4}, {"color": "gray", "from": "101stAASLTDiv", "to": "usacac", "value": 3, "weight": 3}, {"color": "gray", "from": "101stAASLTDiv", "to": "woolstonphoto", "value": 3, "weight": 3}, {"color": "gray", "from": "101Bastogne", "to": "FORSCOM", "value": 6, "weight": 6}, {"color": "gray", "from": "101CAB", "to": "FORSCOM", "value": 3, "weight": 3}, {"color": "gray", "from": "101stAASLTDIV", "to": "18airbornecorps", "value": 10, "weight": 10}, {"color": "gray", "from": "101stAASLTDIV", "to": "3rd_Infantry", "value": 4, "weight": 4}, {"color": "gray", "from": "101stAASLTDIV", "to": "FORSCOM", "value": 9, "weight": 9}, {"color": "gray", "from": "18airbornecorps", "to": "10MTNDiv", "value": 111, "weight": 111}, {"color": "gray", "from": "18airbornecorps", "to": "10MTNDIV", "value": 4, "weight": 4}, {"color": "gray", "from": "18airbornecorps", "to": "3rd_Infantry", "value": 100, "weight": 100}, {"color": "gray", "from": "18airbornecorps", "to": "40thPAD", "value": 14, "weight": 14}, {"color": "gray", "from": "18airbornecorps", "to": "82ndABNDiv", "value": 19, "weight": 19}, {"color": "gray", "from": "18airbornecorps", "to": "ArmyChiefStaff", "value": 6, "weight": 6}, {"color": "gray", "from": "18airbornecorps", "to": "CAFinUS", "value": 3, "weight": 3}, {"color": "gray", "from": "18airbornecorps", "to": "FORSCOM", "value": 23, "weight": 23}, {"color": "gray", "from": "18airbornecorps", "to": "HamillHimself", "value": 8, "weight": 8}, {"color": "gray", "from": "18airbornecorps", "to": "HigginbothamA", "value": 4, "weight": 4}, {"color": "gray", "from": "18airbornecorps", "to": "TaskandPurpose", "value": 3, "weight": 3}, {"color": "gray", "from": "18airbornecorps", "to": "TheWTFNation", "value": 3, "weight": 3}, {"color": "gray", "from": "18airbornecorps", "to": "USArmy", "value": 15, "weight": 15}, {"color": "gray", "from": "18airbornecorps", "to": "WTFIOGuy", "value": 4, "weight": 4}, {"color": "gray", "from": "18airbornecorps", "to": "WTFNationRadio", "value": 4, "weight": 4}, {"color": "gray", "from": "18airbornecorps", "to": "halbritz", "value": 4, "weight": 4}, {"color": "gray", "from": "18airbornecorps", "to": "jaketapper", "value": 3, "weight": 3}, {"color": "gray", "from": "18airbornecorps", "to": "rickdicksonreal", "value": 8, "weight": 8}, {"color": "gray", "from": "18airbornecorps", "to": "scottjstephens", "value": 10, "weight": 10}, {"color": "gray", "from": "18airbornecorps", "to": "shelby3a", "value": 13, "weight": 13}, {"color": "gray", "from": "18airbornecorps", "to": "veteran_talk", "value": 3, "weight": 3}, {"color": "gray", "from": "40thPAD", "to": "3rd_Infantry", "value": 4, "weight": 4}, {"color": "gray", "from": "ArmyChiefStaff", "to": "3rd_Infantry", "value": 4, "weight": 4}, {"color": "gray", "from": "ArmyChiefStaff", "to": "FORSCOM", "value": 5, "weight": 5}, {"color": "gray", "from": "FORSCOM", "to": "10MTNDiv", "value": 4, "weight": 4}, {"color": "gray", "from": "FORSCOM", "to": "3rd_Infantry", "value": 3, "weight": 3}, {"color": "gray", "from": "FORSCOM", "to": "82ndABNDiv", "value": 10, "weight": 10}, {"color": "gray", "from": "FORSCOM", "to": "10thMTNDIVARTY", "value": 4, "weight": 4}, {"color": "gray", "from": "FORSCOM", "to": "15thSMA", "value": 5, "weight": 5}, {"color": "gray", "from": "FORSCOM", "to": "16thSMA", "value": 7, "weight": 7}, {"color": "gray", "from": "FORSCOM", "to": "18abc_Dragon9", "value": 3, "weight": 3}, {"color": "gray", "from": "FORSCOM", "to": "1stArmoredDiv", "value": 3, "weight": 3}, {"color": "gray", "from": "FORSCOM", "to": "1stCAB1ID", "value": 3, "weight": 3}, {"color": "gray", "from": "FORSCOM", "to": "3dUSCAV", "value": 3, "weight": 3}, {"color": "gray", "from": "FORSCOM", "to": "AUSAorg", "value": 3, "weight": 3}, {"color": "gray", "from": "FORSCOM", "to": "ArmedwScience", "value": 3, "weight": 3}, {"color": "gray", "from": "FORSCOM", "to": "ArmyChaplains", "value": 3, "weight": 3}, {"color": "gray", "from": "FORSCOM", "to": "ArmyMedicine", "value": 5, "weight": 5}, {"color": "gray", "from": "FORSCOM", "to": "CDCgov", "value": 11, "weight": 11}, {"color": "gray", "from": "FORSCOM", "to": "DeptVetAffairs", "value": 7, "weight": 7}, {"color": "gray", "from": "FORSCOM", "to": "DeptofDefense", "value": 29, "weight": 29}, {"color": "gray", "from": "FORSCOM", "to": "FORSCOMCSM23", "value": 4, "weight": 4}, {"color": "gray", "from": "FORSCOM", "to": "FightingFirst", "value": 12, "weight": 12}, {"color": "gray", "from": "FORSCOM", "to": "FortCampbell", "value": 5, "weight": 5}, {"color": "gray", "from": "FORSCOM", "to": "I_Corps", "value": 4, "weight": 4}, {"color": "gray", "from": "FORSCOM", "to": "MilitaryHealth", "value": 3, "weight": 3}, {"color": "gray", "from": "FORSCOM", "to": "NATO", "value": 4, "weight": 4}, {"color": "gray", "from": "FORSCOM", "to": "NoSlackBN", "value": 3, "weight": 3}, {"color": "gray", "from": "FORSCOM", "to": "PantherBrigade", "value": 4, "weight": 4}, {"color": "gray", "from": "FORSCOM", "to": "PentagonPresSec", "value": 4, "weight": 4}, {"color": "gray", "from": "FORSCOM", "to": "RedCurraheeBN", "value": 3, "weight": 3}, {"color": "gray", "from": "FORSCOM", "to": "SecArmy", "value": 7, "weight": 7}, {"color": "gray", "from": "FORSCOM", "to": "SecDef", "value": 11, "weight": 11}, {"color": "gray", "from": "FORSCOM", "to": "Strike_Hold", "value": 3, "weight": 3}, {"color": "gray", "from": "FORSCOM", "to": "USACIMT", "value": 3, "weight": 3}, {"color": "gray", "from": "FORSCOM", "to": "USARPAC", "value": 3, "weight": 3}, {"color": "gray", "from": "FORSCOM", "to": "USArmy", "value": 60, "weight": 60}, {"color": "gray", "from": "FORSCOM", "to": "USArmyEURAF", "value": 10, "weight": 10}, {"color": "gray", "from": "FORSCOM", "to": "USArmyReserve", "value": 7, "weight": 7}, {"color": "gray", "from": "FORSCOM", "to": "USNationalGuard", "value": 8, "weight": 8}, {"color": "gray", "from": "FORSCOM", "to": "USNavy", "value": 5, "weight": 5}, {"color": "gray", "from": "FORSCOM", "to": "US_TRANSCOM", "value": 5, "weight": 5}, {"color": "gray", "from": "FORSCOM", "to": "UnderSecArmy", "value": 3, "weight": 3}, {"color": "gray", "from": "FORSCOM", "to": "V_Corps_", "value": 5, "weight": 5}, {"color": "gray", "from": "FORSCOM", "to": "armyfutures", "value": 5, "weight": 5}, {"color": "gray", "from": "FORSCOM", "to": "csaSoldier4Life", "value": 3, "weight": 3}, {"color": "gray", "from": "FORSCOM", "to": "fema", "value": 5, "weight": 5}, {"color": "gray", "from": "FORSCOM", "to": "forthood", "value": 3, "weight": 3}, {"color": "gray", "from": "FORSCOM", "to": "iiicorps_cg", "value": 5, "weight": 5}, {"color": "gray", "from": "FORSCOM", "to": "lancer_brigade", "value": 3, "weight": 3}, {"color": "gray", "from": "FORSCOM", "to": "thejointstaff", "value": 3, "weight": 3}, {"color": "gray", "from": "FORSCOM", "to": "usacac", "value": 8, "weight": 8}, {"color": "gray", "from": "FORSCOM", "to": "usarec", "value": 5, "weight": 5}, {"color": "gray", "from": "FORSCOM", "to": "warriorgames", "value": 3, "weight": 3}, {"color": "gray", "from": "JohnCogbill", "to": "3rd_Infantry", "value": 4, "weight": 4}, {"color": "gray", "from": "Mother_of_Tanks", "to": "3rd_Infantry", "value": 4, "weight": 4}, {"color": "gray", "from": "USArmy", "to": "10MTNDiv", "value": 14, "weight": 14}, {"color": "gray", "from": "USArmy", "to": "3rd_Infantry", "value": 55, "weight": 55}, {"color": "gray", "from": "USArmy", "to": "82ndABNDiv", "value": 22, "weight": 22}, {"color": "gray", "from": "USArmyEURAF", "to": "3rd_Infantry", "value": 3, "weight": 3}, {"color": "gray", "from": "10MTNDiv", "to": "10MTNDIV", "value": 18, "weight": 18}, {"color": "gray", "from": "10MTNDiv", "to": "10thCAB", "value": 5, "weight": 5}, {"color": "gray", "from": "10MTNDiv", "to": "10thMTNDIVARTY", "value": 4, "weight": 4}, {"color": "gray", "from": "10MTNDiv", "to": "10thSBDE", "value": 4, "weight": 4}, {"color": "gray", "from": "10MTNDiv", "to": "16thSMA", "value": 3, "weight": 3}, {"color": "gray", "from": "10MTNDiv", "to": "1BCT10MTN", "value": 102, "weight": 102}, {"color": "gray", "from": "10MTNDiv", "to": "2BCT10thMtnDiv", "value": 9, "weight": 9}, {"color": "gray", "from": "10MTNDiv", "to": "3_10MTNPatriots", "value": 13, "weight": 13}, {"color": "gray", "from": "10MTNDiv", "to": "climbtoglory7", "value": 4, "weight": 4}, {"color": "gray", "from": "10MTNDiv", "to": "mountain_six", "value": 12, "weight": 12}, {"color": "gray", "from": "16thSMA", "to": "3rd_Infantry", "value": 9, "weight": 9}, {"color": "gray", "from": "3rd_Infantry", "to": "1ABCT_3ID", "value": 27, "weight": 27}, {"color": "gray", "from": "3rd_Infantry", "to": "2INFDIV", "value": 3, "weight": 3}, {"color": "gray", "from": "3rd_Infantry", "to": "3rdCAB", "value": 7, "weight": 7}, {"color": "gray", "from": "3rd_Infantry", "to": "3rdIDSB", "value": 9, "weight": 9}, {"color": "gray", "from": "3rd_Infantry", "to": "82ndABNDiv", "value": 4, "weight": 4}, {"color": "gray", "from": "3rd_Infantry", "to": "ArmyHRC", "value": 4, "weight": 4}, {"color": "gray", "from": "3rd_Infantry", "to": "ArmyWP_Football", "value": 5, "weight": 5}, {"color": "gray", "from": "3rd_Infantry", "to": "Army_Aviation", "value": 3, "weight": 3}, {"color": "gray", "from": "3rd_Infantry", "to": "DeptofDefense", "value": 3, "weight": 3}, {"color": "gray", "from": "3rd_Infantry", "to": "EagleWerx", "value": 3, "weight": 3}, {"color": "gray", "from": "3rd_Infantry", "to": "EighthArmyKorea", "value": 3, "weight": 3}, {"color": "gray", "from": "3rd_Infantry", "to": "FortBenning", "value": 4, "weight": 4}, {"color": "gray", "from": "3rd_Infantry", "to": "HinesvilleGA", "value": 8, "weight": 8}, {"color": "gray", "from": "3rd_Infantry", "to": "MarneCG", "value": 29, "weight": 29}, {"color": "gray", "from": "3rd_Infantry", "to": "MarneThunder", "value": 3, "weight": 3}, {"color": "gray", "from": "3rd_Infantry", "to": "PatDonahoeArmy", "value": 3, "weight": 3}, {"color": "gray", "from": "3rd_Infantry", "to": "SecArmy", "value": 6, "weight": 6}, {"color": "gray", "from": "3rd_Infantry", "to": "SpartanBrigade", "value": 14, "weight": 14}, {"color": "gray", "from": "3rd_Infantry", "to": "TheWTFNation", "value": 5, "weight": 5}, {"color": "gray", "from": "3rd_Infantry", "to": "TradocDCG", "value": 6, "weight": 6}, {"color": "gray", "from": "3rd_Infantry", "to": "USAGStewartHAAF", "value": 26, "weight": 26}, {"color": "gray", "from": "3rd_Infantry", "to": "WestPoint_USMA", "value": 5, "weight": 5}, {"color": "gray", "from": "3rd_Infantry", "to": "cityofsavannah", "value": 4, "weight": 4}, {"color": "gray", "from": "3rd_Infantry", "to": "cushing_j", "value": 4, "weight": 4}, {"color": "gray", "from": "3rd_Infantry", "to": "joe_hilbertjr", "value": 3, "weight": 3}, {"color": "gray", "from": "3rd_Infantry", "to": "libertycounty", "value": 3, "weight": 3}, {"color": "gray", "from": "82ndABNDiv", "to": "2BCT_FALCONS", "value": 31, "weight": 31}, {"color": "gray", "from": "82ndABNDiv", "to": "82ndCAB", "value": 11, "weight": 11}, {"color": "gray", "from": "82ndABNDiv", "to": "82ndDivarty", "value": 3, "weight": 3}, {"color": "gray", "from": "82ndABNDiv", "to": "AA9Sends", "value": 8, "weight": 8}, {"color": "gray", "from": "82ndABNDiv", "to": "Adsb82nd", "value": 5, "weight": 5}, {"color": "gray", "from": "82ndABNDiv", "to": "CDonahue1792", "value": 22, "weight": 22}, {"color": "gray", "from": "82ndABNDiv", "to": "CJTFOIR", "value": 3, "weight": 3}, {"color": "gray", "from": "82ndABNDiv", "to": "FortPolkPAO", "value": 4, "weight": 4}, {"color": "gray", "from": "82ndABNDiv", "to": "FtBraggNC", "value": 4, "weight": 4}, {"color": "gray", "from": "82ndABNDiv", "to": "PantherBrigade", "value": 49, "weight": 49}, {"color": "gray", "from": "82ndABNDiv", "to": "StorytellerSBM", "value": 4, "weight": 4}, {"color": "gray", "from": "82ndABNDiv", "to": "Strike_Hold", "value": 22, "weight": 22}, {"color": "gray", "from": "82ndABNDiv", "to": "YouTube", "value": 3, "weight": 3}, {"color": "gray", "from": "82ndABNDiv", "to": "usairforce", "value": 6, "weight": 6}]);
+
+        // adding nodes and edges to the graph
+        data = {nodes: nodes, edges: edges};
+
+        var options = {
+    "configure": {
+        "enabled": true,
+        "filter": [
+            "physics"
+        ]
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": false,
+            "type": "continuous"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": true,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+        
+        
+
+        
+        // if this network requires displaying the configure window,
+        // put it in its div
+        options.configure["container"] = document.getElementById("config");
+        
+
+        network = new vis.Network(container, data, options);
+
+        
+
+
+        
+        network.on("stabilizationProgress", function(params) {
+      		document.getElementById('loadingBar').removeAttribute("style");
+	        var maxWidth = 496;
+	        var minWidth = 20;
+	        var widthFactor = params.iterations/params.total;
+	        var width = Math.max(minWidth,maxWidth * widthFactor);
+
+	        document.getElementById('bar').style.width = width + 'px';
+	        document.getElementById('text').innerHTML = Math.round(widthFactor*100) + '%';
+	    });
+	    network.once("stabilizationIterationsDone", function() {
+	        document.getElementById('text').innerHTML = '100%';
+	        document.getElementById('bar').style.width = '496px';
+	        document.getElementById('loadingBar').style.opacity = 0;
+	        // really clean the dom element
+	        setTimeout(function () {document.getElementById('loadingBar').style.display = 'none';}, 500);
+	    });
+        
+
+        return network;
+
+    }
+
+    drawGraph();
+
+</script>
+</body>
+</html>

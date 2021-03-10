@@ -133,7 +133,9 @@ def get_user_activity0(username, record_count = 10):
         activity = activity        
     
     except:
-        activity = pd.DataFrame(first_request['data'])        
+        activity = pd.DataFrame(first_request['data']) 
+        
+    activity['author_screen_name'] = username
     
     return activity
 
@@ -146,14 +148,15 @@ def get_user_activity(usernames, record_count = 10):
     return activity
 
 def extract_el(data):
-    hashtag_el = [pd.DataFrame({'author_id':[], 'status_id': [], 'hashtag': []})]
+    hashtag_el = [pd.DataFrame({'author_id_from':[], 'author_screen_name_from': [], 'status_id': [], 'to': []})]
     for k in range(0, len(data)):       
         try: 
             hashtags = pd.json_normalize(data['entities'][k]['hashtags'])['tag'].tolist()
-            el = pd.DataFrame({'hashtag': hashtags})
-            el['author_id'] = data['author_id'][k]
+            el = pd.DataFrame({'to': hashtags})            
+            el['author_id_from'] = data['author_id'][k]
+            el['author_screen_name_from'] = data['author_screen_name'][k]
             el['status_id'] = data['id'][k]
-            el = el[['author_id', 'status_id', 'hashtag']]
+            el = el[['author_id_from', 'author_screen_name_from', 'status_id', 'to']]
             hashtag_el.append(el)
         except:
             pass
@@ -162,14 +165,15 @@ def extract_el(data):
     hashtag_el.reset_index(drop = True, inplace = True)
     hashtag_el['edge_type'] = 'hashtag'
         
-    mention_el = [pd.DataFrame({'author_id':[], 'status_id': [], 'mentioned_user': []})]
+    mention_el = [pd.DataFrame({'author_id_from':[], 'author_screen_name_from': [], 'status_id': [], 'to': []})]
     for k in range(0, len(data)):       
         try: 
             mentioned_user = pd.json_normalize(data['entities'][k]['mentions'])['username'].tolist()
-            el = pd.DataFrame({'mentioned_user': mentioned_user})
-            el['author_id'] = data['author_id'][k]
+            el = pd.DataFrame({'to': mentioned_user})
+            el['author_id_from'] = data['author_id'][k]
+            el['author_screen_name_from'] = data['author_screen_name'][k]
             el['status_id'] = data['id'][k]
-            el = el[['author_id', 'status_id', 'mentioned_user']]
+            el = el[['author_id_from', 'author_screen_name_from', 'status_id', 'to']]            
             mention_el.append(el)
         except:
             pass
@@ -178,14 +182,15 @@ def extract_el(data):
     mention_el.reset_index(drop = True, inplace = True)
     mention_el['edge_type'] = 'mention'
 
-    url_el = [pd.DataFrame({'author_id':[], 'status_id': [], 'url': []})]
+    url_el = [pd.DataFrame({'author_id_from':[], 'author_screen_name_from': [], 'status_id': [], 'to': []})]
     for k in range(0, len(data)):       
         try: 
             mentioned_user = pd.json_normalize(data['entities'][k]['urls'])['url'].tolist()
-            el = pd.DataFrame({'url': mentioned_user})
-            el['author_id'] = data['author_id'][k]
+            el = pd.DataFrame({'to': mentioned_user})
+            el['author_id_from'] = data['author_id'][k]
+            el['author_screen_name_from'] = data['author_screen_name'][k]
             el['status_id'] = data['id'][k]
-            el = el[['author_id', 'status_id', 'url']]
+            el = el[['author_id_from', 'author_screen_name_from', 'status_id', 'to']]            
             url_el.append(el)
         except:
             pass
