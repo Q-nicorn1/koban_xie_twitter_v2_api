@@ -45,6 +45,96 @@ def get_users(usernames):
     users = users[['user_id','username','name','description','location','created_at','followers_count','following_count','tweet_count','listed_count']]    
     return users 
 
+def lookup_followed_accounts_simple(username, token = 0): 
+    """Query a user screen name for information about 100 accounts they follow.
+
+    Args:
+        usernames: user screen name to query
+    Returns:
+        Dataframe of profile information (user_id, username, name, description, location, created_at, followers_count, following_count, tweet_count, listed_count).    
+
+    """ 
+    # authenticate with end point
+    bearer_token = os.environ.get("BEARER_TOKEN")  
+    
+    # query profile info to get a user_id
+    user_info = get_users(username)
+    user_id = user_info['user_id'][0]
+        
+    # generate query string
+    # https://developer.twitter.com/en/docs/twitter-api/data-dictionary/object-model/tweet
+    if token == 0: 
+        url =  'https://api.twitter.com/2/users/' + user_id + '/following?user.fields=description,created_at,entities,id,location,name,public_metrics,url,username,verified&max_results=5'
+    else:
+        url =  'https://api.twitter.com/2/users/' + user_id + '/following?user.fields=description,created_at,entities,id,location,name,public_metrics,url,username,verified&max_results=100&pagination_token=' + token    
+
+    # submit GET request - submit a query to the API      
+    response = requests.request("GET", url,
+                                headers = {"Authorization": "Bearer {}".format(bearer_token)})
+
+    return response.json()
+
+
+def lookup_followed_accounts(username, record_count = 10): 
+    # authenticate with end point
+    bearer_token = os.environ.get("BEARER_TOKEN")
+    
+    user_info = get_users(username)
+    user_id = user_info['user_id'][0]
+    
+    # generate query string
+    if record_count <= 100:
+        first_request = lookup_followed_accounts_simple(username, token = 0)           
+    else:
+        first_request = lookup_followed_accounts_simple(username, token = 0)        
+        status = "keep_going"
+    
+    try: 
+        next_token = first_request['meta']['next_token']              
+        followed_dfs = []
+        batch_count = math.ceil(record_count/100)
+        n = 1  
+        
+        while (status != "done") & (n <= batch_count):
+            status = update_status(last_request = first_request)
+            
+            while (status != "done") & (n <= batch_count):
+                resp = lookup_followed_accounts_simple(username, token = next_token)
+                print("token: " + next_token) 
+                followed_dfs.append(resp)
+                status = update_status(last_request = resp)                  
+                n += 1
+                try: 
+                    next_token = resp['meta']['next_token']
+                except:
+                    token = "done"
+                    status = 'done'         
+            
+        # combine results into a single dataframe
+        followed_accounts = []           
+        for i in range(0, len(followed_dfs)):
+            followed_accounts.append(pd.DataFrame(followed_dfs[i]['data']))
+        followed_accounts = pd.concat(followed_accounts)        
+    
+    except:
+        followed_accounts = pd.DataFrame(first_request['data'])       
+        
+    # parse the json response into a dataframe    
+    followed_accounts['followers_count'] = followed_accounts['public_metrics'].apply(lambda x: x['followers_count'])
+    followed_accounts['following_count'] = followed_accounts['public_metrics'].apply(lambda x: x['following_count'])
+    followed_accounts['tweet_count'] = followed_accounts['public_metrics'].apply(lambda x: x['tweet_count'])
+    followed_accounts['listed_count'] = followed_accounts['public_metrics'].apply(lambda x: x['listed_count'])
+    followed_accounts = followed_accounts.rename(columns = {'id':'user_id'})
+
+    # error handling to prevent failing when columns are missing in the json response
+    empty_df = pd.DataFrame({'user_id': [], 'username': [],'name': [],'description': [], 
+                             'location': [],'created_at': [],'followers_count': [],'following_count': [],
+                             'tweet_count': [],'listed_count': []})
+    followed_accounts = pd.concat([empty_df, followed_accounts])
+
+    followed_accounts = followed_accounts[['user_id','username','name','description','location','created_at','followers_count','following_count','tweet_count','listed_count']]    
+    return followed_accounts  
+
 def get_user_activity_simple(username, token = 0):
     # authenticate with end point
     bearer_token = os.environ.get("BEARER_TOKEN")
@@ -80,16 +170,6 @@ def update_status(last_request):
     return status
 
 def get_user_activity0(username, record_count = 10): 
-    """Query a user screen name for timeline activity
-
-    Args:
-        usernames: user screen names to query
-        record_count: a number specifying how many records to return; maximum of 2500, minimum of 5
-        
-    Returns:
-        Dataframe of user activity.    
-
-    """
     # authenticate with end point
     bearer_token = os.environ.get("BEARER_TOKEN")
     
@@ -98,8 +178,7 @@ def get_user_activity0(username, record_count = 10):
     
     # generate query string
     if record_count <= 100:
-        first_request = get_user_activity_simple(username, token = 0)
-        print("first record check ")     
+        first_request = get_user_activity_simple(username, token = 0)     
     else:
         first_request = get_user_activity_simple(username, token = 0)        
         status = "keep_going"
@@ -129,8 +208,7 @@ def get_user_activity0(username, record_count = 10):
         activity = []           
         for i in range(0, len(tweet_dfs)):
             activity.append(pd.DataFrame(tweet_dfs[i]['data']))
-        activity = pd.concat(activity)
-        activity = activity        
+        activity = pd.concat(activity)       
     
     except:
         activity = pd.DataFrame(first_request['data']) 
