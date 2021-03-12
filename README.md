@@ -1,31 +1,9 @@
 # koban_xie_twitter_v2_api
 Python wrappers for the new Twitter API, ETL scripts for translation to an SQL database, Jupyter notebooks to interact with the SQL database.
 
-docker-compose.yml
-```
-version: '3.3'
-services:
-  db:
-    image: mysql:5.7
-    restart: always
-    environment:
-      MYSQL_DATABASE: 'db'
-      # So you don't have to use root, but you can if you like
-      MYSQL_USER: 'user'
-      # You can use whatever password you like
-      MYSQL_PASSWORD: 'password'
-      # Password for root access
-      MYSQL_ROOT_PASSWORD: 'password'
-    ports:
-      # <Port exposed> : < MySQL Port running inside container>
-      - '3306:3306'
-    expose:
-      # Opens port 3306 on the container
-      - '3306'
-      # Where our data will be persisted
-    volumes:
-      - my-db:/var/lib/mysql
-# Names our volume
-volumes:
-  my-db:
-```
+1. `DataCollection.ipynb`: Jupyter notebook to collect data via the Twitter API
+2. `docker-compose.yml`: Docker yml file to create a locally hosted MySQL container
+3. `DataETL_ToMySQL.ipynb`: Jupyter notebook to create MySQL table structure and translate Twitter data to MySQL
+4. `DataAnalysisVisualization.ipynb`: Jupyter notebook to create mention, hashtag, and url networks.
+
+![pyvis network](pyvis_network.png)
