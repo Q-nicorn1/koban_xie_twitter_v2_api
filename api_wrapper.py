@@ -214,6 +214,27 @@ def get_user_activity0(username, record_count = 10):
         activity = pd.DataFrame(first_request['data']) 
         
     activity['author_screen_name'] = username
+    activity['retweet_count'] = activity['public_metrics'].apply(lambda x: x['retweet_count'])
+    activity['reply_count'] = activity['public_metrics'].apply(lambda x: x['reply_count'])
+    activity['like_count'] = activity['public_metrics'].apply(lambda x: x['like_count'])
+    activity['quote_count'] = activity['public_metrics'].apply(lambda x: x['quote_count'])
+    
+    def extract_ref_tweet_type(x):     
+        try:
+            val = x[0]['type']
+        except:
+            val = 'original_tweet'
+        return val
+
+    def extract_ref_tweet_id(x):     
+        try:
+            val = x[0]['id']
+        except:
+            val = None
+        return val
+
+    activity['referenced_tweet_type'] = activity['referenced_tweets'].apply(lambda x: extract_ref_tweet_type(x))
+    activity['referenced_tweet_id'] = activity['referenced_tweets'].apply(lambda x: extract_ref_tweet_id(x))
     
     return activity
 
