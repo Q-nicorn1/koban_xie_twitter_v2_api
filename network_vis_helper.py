@@ -58,9 +58,11 @@ def draw_graph(networkx_graph,notebook=True,output_filename='graph.html',show_bu
         return pyvis_graph.show(output_filename)
     
 def get_weighted_el(el):
-    weighted_el = el.groupby(['author_screen_name_from', 'to', 'edge_type']).agg(len).reset_index()
-    weighted_el = (weighted_el[['author_screen_name_from', 'to', 'edge_type', 'status_id']]
-                              .rename(columns = {'author_screen_name_from': 'source', 'to': 'target', 'status_id':'weight'}))
+    weighted_el = el.groupby(['author_screen_name_from', 'to_entity', 'edge_type']).agg(len).reset_index()
+    weighted_el = (weighted_el[['author_screen_name_from', 'to_entity', 'edge_type', 'status_id']]
+                              .rename(columns = {'author_screen_name_from': 'source', 
+                                                 'to_entity': 'target', 
+                                                 'status_id':'weight'}))
     return weighted_el 
 
 def render_graph(weighted_el, edge_type, edge_weight_threshold = 1):
