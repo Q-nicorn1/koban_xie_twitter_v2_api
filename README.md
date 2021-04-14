@@ -15,7 +15,7 @@ In this example, we queried a set of Twitter accounts that were previously ident
 Since, the Twitter [API rate limit](https://developer.twitter.com/en/docs/twitter-api/rate-limits#v2-limits) for user look up queries is 900 accounts per 15 minute, the `DataCollection.ipynb` incorporates sleep time to prevent time outs. The workflow also incorporates error handling for empty responses resulting from querying deleted or suspended accounts.    
 
 <center>
-![](./images/GetSeedUserInfo.png){width=600px}
+<img src = "./images/GetSeedUserInfo.png" />
 </center>
 <br>
 
