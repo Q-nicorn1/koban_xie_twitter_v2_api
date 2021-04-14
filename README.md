@@ -57,7 +57,7 @@ Last, we write the data frame, row-by-row, to the SQL database.
 ---------
 ## Data Analysis and Visualization
 
-Now that the data is stored in a SQL database, we can query the data using `pymysql` package and [`network_vis_helper`](https://github.com/GWU-DBMS-For-Analytics/koban_xie_twitter_v2_api/blob/main/network_vis_helper.py) module.  A simple example is provided in the [DataAnalysisVisualization](https://nbviewer.jupyter.org/github/GWU-DBMS-For-Analytics/koban_xie_twitter_v2_api/blob/main/DataAnalysisVisualization.ipynb) notebook to demonstrate how users can interact with the database and highlight the benefit of writing more effective queries (i.e., not using a SELECT * approach).  
+Now that the data is stored in a SQL database, we can query the data using the `pymysql` package and [`network_vis_helper`](https://github.com/GWU-DBMS-For-Analytics/koban_xie_twitter_v2_api/blob/main/network_vis_helper.py) module.  A simple example is provided in the [DataAnalysisVisualization](https://nbviewer.jupyter.org/github/GWU-DBMS-For-Analytics/koban_xie_twitter_v2_api/blob/main/DataAnalysisVisualization.ipynb) notebook to demonstrate how users can interact with the database and highlights the benefit of writing more effective queries (i.e., not using a SELECT * approach).  
 
 For example, if we want to view the top-10 most liked tweets, it takes over 5 seconds to load the entire `statuses` table into memory and use Python to filter the data to the top 10-records.  
 
