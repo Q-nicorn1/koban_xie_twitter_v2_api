@@ -70,6 +70,6 @@ Another advantage is that we can leverage the structure of the `edgelist` table 
 
 <img src = "./images/GenerateNetwork.png" width=600px alt="centered image"/>
 
-A static image of the graph is provided below; however, the html-version of this graph allows a user to explore the graph interactively (e.g., zoom, reposition nodes, etc.)
+A static image of the graph is provided below; however, the html-version of this graph allows a user to explore the graph interactively (e.g., zoom, reposition nodes, etc.).  An interactive version of the graph can be viewed at the following [link](https://nbviewer.jupyter.org/github/GWU-DBMS-For-Analytics/koban_xie_twitter_v2_api/blob/main/DataAnalysisVisualization.ipynb).
 
 <img src = "./images/Graph.png" width=600px alt="centered image"/>
