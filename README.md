@@ -7,7 +7,7 @@ The following repo provides Python modules to query the new Twitter API, instruc
 ---------
 ## Data Collection
 
-The analytic workflow starts with collecting data the V2 Twitter API by using functions found in the [`api_wrapper`](https://github.com/GWU-DBMS-For-Analytics/koban_xie_twitter_v2_api/blob/main/api_wrapper.py) module. In order for user to access the Twitter API, users must first request a bearer token from the [Twitter developer portal](https://developer.twitter.com/en/portal/projects-and-apps).  
+The analytic workflow starts with collecting data from the V2 Twitter API by using functions found in the [`api_wrapper`](https://github.com/GWU-DBMS-For-Analytics/koban_xie_twitter_v2_api/blob/main/api_wrapper.py) module. In order for users to access the Twitter API, users must first request a bearer token from the [Twitter developer portal](https://developer.twitter.com/en/portal/projects-and-apps).  
 
 In this example, we query a set of Twitter accounts that were previously identified to post pro or anti-vaccination content by calling the `get_users` function.  Seed user names are provided in the `seed_accounts.csv` file in the `data` folder on this GitHub repository. 
 
@@ -19,7 +19,7 @@ Next, we query seed accounts for their last 200 posts by calling the `get_user_a
 
 <img src = "./images/GetUserActivity.png" width=800px alt="centered image"/>
 
-Likewise, we call the `extract_el` function to parse mentions, hashtags, and URLs into a directed edgelist.  Source nodes in this edge list record the `author_id` and `author_screen_name` of users who mention entities (i.e., users, hashtags, or URLs) in a post.  Since users can mention several entities in individual posts, the activity data has a one-to-many relationship with the edge list. In this example, 783 seed users mentioned 49,022 users. 
+Likewise, we call the `extract_el` function to parse mentions, hashtags, and URLs into a directed edgelist.  Source nodes in this edge list record the `author_id` and `author_screen_name` of users who mention entities (i.e., users, hashtags, or URLs).  Since users can mention several entities in individual posts, the activity data has a one-to-many relationship with the edge list. In this example, 783 seed users mentioned 49,022 users. 
 
 Although we did not peform additional data collection beyond what was mentioned, we could easily incorporate additional steps if needed.  For example, we could collect user profile information for the 49,022 mentioned users.  We could incorporate information from additional sources (e.g., query the Botometer API for bot likelihood scores).  We could expand our analysis to a 2-hop network by querying mentioned users for account activity. 
 
@@ -29,7 +29,7 @@ To make the [`api_wrapper`](https://github.com/GWU-DBMS-For-Analytics/koban_xie_
 ## Creating a MySQL Database
 
 In retrospect, we would have preferred to create a cloud-hosted MySQL database using Amazon's Relational Database Service (RDS).  A cloud-hosted database would allow all team members to interact with a single database remotely.  Instead, we created [Docker](https://www.docker.com/) container to locally host a MySQL database.  We did this for two reasons: 1) it doesn't cost anything to locally host a database, and 2) we were not familiar with how to set up a RDS database.  
-To creat the Docker container, we created an empty directory and added the following Docker .yml file to it:
+To create the Docker container, we created an empty directory and added the following Docker yml file to it:
 
 <img src = "./images/DockerYml.png" width=600px alt="centered image"/>
 
@@ -38,7 +38,7 @@ Then, we navigated to the directory with the .yml file and executed the `docker 
 ---------
 ## Translating Data to MySQL
 
-The [DataETL_ToMySQL](https://nbviewer.jupyter.org/github/GWU-DBMS-For-Analytics/koban_xie_twitter_v2_api/blob/main/DataETL_ToMySQL.ipynb) notebook provides an overview of the steps we used to create SQL table schemas and write .csv data files to our database. The entity relationship diagram of our database is shown below:
+The [DataETL_ToMySQL](https://nbviewer.jupyter.org/github/GWU-DBMS-For-Analytics/koban_xie_twitter_v2_api/blob/main/DataETL_ToMySQL.ipynb) notebook provides an overview of the steps we used to create SQL table schemas and write csv data files to our database. The entity relationship diagram of our database is shown below:
 
 <img src = "./images/ERDiagram.png" width=500px alt="centered image"/>
 
