@@ -1,6 +1,6 @@
 ## Introduction
 
-In September 2020, Twitter released a new API [endpoint](https://developer.twitter.com/en/docs/twitter-api/early-access) that now includes several useful [fields](https://developer.twitter.com/en/docs/twitter-api/metrics) that were not previously available (e.g., like counts and impression data).  Creating Python scripts to interact with the new API is useful to enable future studies that use the new fields.    
+In September 2020, Twitter released a new API [endpoint](https://developer.twitter.com/en/docs/twitter-api/early-access) that now includes several useful [fields](https://developer.twitter.com/en/docs/twitter-api/metrics) that were not previously available (e.g., like counts and impression data).  Creating Python scripts to interact with the new API is useful to enable future studies that use these new fields.    
 
 This repository provides Python modules to query the v2 Twitter API, instructions on how to create a locally-hosted MySQL database, modules to translate Twitter data to SQL, and modules to create interactive network graphs.  Storing data in MySQL database with an edge list table makes it easier to generate and explore mention, hashtag, or URLs network graphs.
 
@@ -43,7 +43,7 @@ The [DataETL_ToMySQL](https://nbviewer.jupyter.org/github/GWU-DBMS-For-Analytics
 
 <img src = "./images/ERDiagram.png" width=500px alt="centered image"/>
 
-Below is an example of an ETL workflow for the user table.First, we create a SQL table where we specify the data types for each of the fields.
+Below is an example of an ETL workflow for the `users` table. First, we create a SQL table where we specify the data types for each of the fields.
 
 <img src = "./images/CreateTable.png" width=800px alt="centered image"/>
 
@@ -51,14 +51,14 @@ Next, we load the data we collected in the previous step and transform fields wh
 
 <img src = "./images/LoadTransformData.png" width=800px alt="centered image"/>
 
-Last, we write the data frame, row-by-row, to the SQL database.
+Last, we write the data, row-by-row, to the SQL database.
 
 <img src = "./images/WriteToMySQL.png" width=800px alt="centered image"/>
 
 ---------
 ## Data Analysis and Visualization
 
-Now that the data is stored in a SQL database, we can query the data using the `pymysql` package and [`network_vis_helper`](https://github.com/GWU-DBMS-For-Analytics/koban_xie_twitter_v2_api/blob/main/network_vis_helper.py) module.  A simple example is provided in the [DataAnalysisVisualization](https://nbviewer.jupyter.org/github/GWU-DBMS-For-Analytics/koban_xie_twitter_v2_api/blob/main/DataAnalysisVisualization.ipynb) notebook to demonstrate how users can interact with the database and highlights the benefit of writing more effective queries (i.e., not using a SELECT * approach).  
+Now that the data is stored in a SQL database, we can query the data using the `pymysql` package and [`network_vis_helper`](https://github.com/GWU-DBMS-For-Analytics/koban_xie_twitter_v2_api/blob/main/network_vis_helper.py) module.  A simple example is provided in the [DataAnalysisVisualization](https://nbviewer.jupyter.org/github/GWU-DBMS-For-Analytics/koban_xie_twitter_v2_api/blob/main/DataAnalysisVisualization.ipynb) notebook to demonstrate how users can interact with the database and to highlight the benefit of writing more effective queries (i.e., not using a SELECT * approach).  
 
 For example, if we want to view the top-10 most liked tweets, it takes over 5 seconds to load the entire `statuses` table into memory and use Python to filter the data to the top 10-records.  
 
@@ -68,12 +68,12 @@ In contrast, if we answer this question using only SQL commands, it executes in 
 
 <img src = "./images/SQLCommand.png" width=800px alt="centered image"/>
 
-Another advantage is that we can leverage the structure of the `edgelist` table to generate network visualizations much easier.  For example, we can quickly generate a graph of the most popular hash tags as follows:
+Another advantage is that we can leverage the structure of the `edgelist` table to easily generate network visualizations.  For example, we can quickly generate a graph of the most popular hashtags as follows:
 
 <img src = "./images/GenerateNetwork.png" width=800px alt="centered image"/>
 
-A static image of the graph is provided below; however, the html-version of this graph allows a user to explore the graph interactively (e.g., zoom, reposition nodes, etc.).  An interactive version of the graph can be viewed at the following [link](https://nbviewer.jupyter.org/github/GWU-DBMS-For-Analytics/koban_xie_twitter_v2_api/blob/main/DataAnalysisVisualization.ipynb).
+A static image of the graph is provided below (orange squares are users; grey circles are hashtags; hashtag node sizes are scaled based on counts; edge widths are scaled based on how often an account used each hashtag); An html-version of this graph allows a user to explore the graph interactively (e.g., zoom, reposition nodes, etc.) and can be viewed at the following [link](https://nbviewer.jupyter.org/github/GWU-DBMS-For-Analytics/koban_xie_twitter_v2_api/blob/main/DataAnalysisVisualization.ipynb).
 
 <img src = "./images/Graph.png" width=800px alt="centered image"/>
 
-Now that the data is in more useable format we can start to think about additional node and edge attributes to add to our node list (i.e., the `users` table) and our edge list.  For example, we could classify accounts as pro or anti-vaccine based on their posting activity (i.e., do they use predominately pro or anti-vaccine hash tags?).  Adding this attribute would allow us to determine if the mention network contains polarized communities of pro and anti-vaccine users.  We could incorporate bot-likelihood scores to assess the proportion of bots within the network or hashtags that are used more often by bots.  
+Now that the data is in more useable format we can start to think about additional node and edge attributes to add to our node list (i.e., the `users` table) and our edge list.  For example, we could classify accounts as pro or anti-vaccine based on their posting activity (i.e., do they use predominately pro or anti-vaccine hashtags?).  Adding this attribute would allow us to determine if the mention network contains polarized communities of pro and anti-vaccine users.  We could incorporate bot-likelihood scores to assess the proportion of bots within the network or identify hashtags that are used more often by bots.  
