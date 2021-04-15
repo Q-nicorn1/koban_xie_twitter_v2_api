@@ -74,7 +74,7 @@ for screen_name in seed_accounts:
                      })
         print(i)
         timestr = time.strftime("%m%d%Y_%H%M")
-        temp.to_csv('/Users/dankoban/Documents/bot_detection/data/' + str(user) + timestr + ".csv")
+        temp.to_csv('data/seed_accounts'.csv")
         botometer_full.append(temp)
 
     except:
